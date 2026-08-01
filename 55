@@ -1,0 +1,49 @@
+local Window = Rayfield:CreateWindow({
+   Name = "Gem Script Hub",
+   LoadingTitle = "Loading Script...",
+   LoadingSubtitle = "by Assistant",
+   ConfigurationSaving = {
+      Enabled = false,
+   },
+   Discord = {
+      Enabled = false,
+   },
+   KeySystem = false
+})
+
+-- สร้าง Tab หลัก
+local MainTab = Window:CreateTab("Main Function", 4483362458) -- ID ไอคอน
+
+-- ตัวแปรควบคุมการทำงานของ Toggle
+local autoSummon = false
+
+-- สร้าง Toggle สำหรับเปิด/ปิด
+local Toggle = MainTab:CreateToggle({
+   Name = "Auto Summon Gem (Loop)",
+   CurrentValue = false,
+   Flag = "GemToggle",
+   Callback = function(Value)
+      autoSummon = Value
+      
+      -- เริ่มทำงานเมื่อเปิด Toggle
+      if autoSummon then
+         task.spawn(function()
+            while autoSummon do
+               local args = {
+                  "summonx gems 9999",
+                  1,
+                  10
+               }
+               
+               -- ส่ง Remoteไปยัง Server
+               pcall(function()
+                  game:GetService("ReplicatedStorage"):WaitForChild("RGX"):WaitForChild("RIO"):FireServer(unpack(args))
+               end)
+               
+               -- หน่วงเวลา 0.5 วินาที เพื่อไม่ให้เกมหลุด (Crash/Kick)
+               task.wait(0.5)
+            end
+         end)
+      end
+   end,
+})
